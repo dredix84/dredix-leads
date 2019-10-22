@@ -9,14 +9,18 @@
         "cakephp/cakephp": "3.8.*",
         "cakephp/migrations": "^2.0.0",
         "cakephp/plugin-installer": "^1.0",
+        "maiconpinto/cakephp-adminlte-theme": "^1.1",
         "mobiledetect/mobiledetectlib": "2.*",
-        "mongodb/mongodb": "^1.5"
+        "mongodb/mongodb": "^1.5",
+        "ext-mongodb": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "cakephp/bake": "^1.9.0",
         "cakephp/cakephp-codesniffer": "^3.0",
-        "cakephp/debug_kit": "^3.17.0",
+        "cakephp/debug_kit": "^3.20",
         "josegonzalez/dotenv": "3.*",
+        "kint-php/kint": "^3.2",
         "phpunit/phpunit": "^5|^6",
         "psy/psysh": "@stable"
     },

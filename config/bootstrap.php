@@ -89,6 +89,7 @@ try {
  * shared configuration.
  */
 //Configure::load('app_local', 'default');
+Configure::load('adminlte', 'default');
 
 /*
  * When debug = true the metadata cache should only last
@@ -209,5 +210,3 @@ Type::build('timestamp')
 //Inflector::rules('uninflected', ['dontinflectme']);
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
 
-
-//Plugin::load('Hayko/Mongodb');

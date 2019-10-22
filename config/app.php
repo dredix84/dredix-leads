@@ -96,7 +96,7 @@ return [
      * Configure the cache adapters.
      */
     'Cache'          => [
-        'default'       => [
+        'default'     => [
             'className' => FileEngine::class,
             'path'      => CACHE,
             'url'       => env('CACHE_DEFAULT_URL', null),
@@ -108,13 +108,22 @@ return [
          * Duration will be set to '+2 minutes' in bootstrap.php when debug = true
          * If you set 'className' => 'Null' core cache will be disabled.
          */
-        '_cake_core_'   => [
+        '_cake_core_' => [
             'className' => FileEngine::class,
             'prefix'    => 'myapp_cake_core_',
             'path'      => CACHE.'persistent/',
             'serialize' => true,
             'duration'  => '+1 years',
             'url'       => env('CACHE_CAKECORE_URL', null),
+        ],
+
+        'session'       => [
+            'className' => FileEngine::class,
+            'prefix'    => 'session_',
+            'path'      => CACHE.'session/',
+            'serialize' => true,
+            'duration'  => '+1 days',
+            'url'       => env('CACHE_DEFAULT_URL', null),
         ],
 
         /**
@@ -389,6 +398,17 @@ return [
      * To use database sessions, load the SQL file located at config/schema/sessions.sql
      */
     'Session'        => [
-        'defaults' => 'php',
+        'defaults' => 'php'
+//
+//        'defaults' => 'cache',
+//        'handler'  => [
+//            'config' => 'session'
+//        ]
+
+//        'defaults' => 'cache',
+//        'handler' => [
+//            'engine' => 'MongoDbSession',
+//            'config' => 'session'
+//        ]
     ],
 ];

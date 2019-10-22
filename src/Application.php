@@ -12,6 +12,7 @@
  * @since     3.3.0
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace App;
 
 use Cake\Core\Configure;
@@ -34,9 +35,6 @@ class Application extends BaseApplication
      */
     public function bootstrap()
     {
-        $this->addPlugin('DebugKit');
-
-
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 
@@ -49,18 +47,19 @@ class Application extends BaseApplication
          * Debug Kit should not be installed on a production system
          */
         if (Configure::read('debug')) {
-            $this->addPlugin(\DebugKit\Plugin::class);
             Configure::write('DebugKit.safeTld', ['dev', 'local', 'example', 'localhost']);
-            Configure::write('DebugKit.forceEnable', false);
+            $this->addPlugin(\DebugKit\Plugin::class);
         }
 
         // Load more plugins here
+        $this->addPlugin('AdminLTE');
     }
 
     /**
      * Setup the middleware queue your application will use.
      *
-     * @param \Cake\Http\MiddlewareQueue $middlewareQueue The middleware queue to setup.
+     * @param  \Cake\Http\MiddlewareQueue  $middlewareQueue  The middleware queue to setup.
+     *
      * @return \Cake\Http\MiddlewareQueue The updated middleware queue.
      */
     public function middleware($middlewareQueue)

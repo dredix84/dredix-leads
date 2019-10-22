@@ -7,10 +7,21 @@ services:
       - '.:/application'
       - './docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf'
     ports:
-      - '80:80'
+      - '8081:80'
   php-fpm:
     build: docker/php-fpm
     working_dir: /application
     volumes:
       - '.:/application'
       - './docker/php-fpm/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini'
+      - './docker/php-fpm/20-xdebug.ini:/etc/php/7.3/fpm/conf.d/20-xdebug.ini'
+#  appserver:
+#    build: docker/php-apache
+#    working_dir: /var/www/application
+#    volumes:
+#      - '.:/var/www/application'
+#      - './docker/php-apache/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini'
+#      - './docker/php-apache/20-xdebug.ini:/etc/php/7.3/fpm/conf.d/20-xdebug.ini'
+#      - './docker/php-apache/000-default.conf:/etc/apache2/sites-available/000-default.conf'
+#    ports:
+#      - '80:80'

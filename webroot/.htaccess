@@ -1,5 +1,13 @@
+php_flag  xdebug.remote_enable on
+php_value xdebug.remote_host "10.0.75.1"
+php_value xdebug.remote_port 9000
+php_value xdebug.idekey PHPSTORM
+#php_flag  xdebug.remote_autostart on
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+
