@@ -41,3 +41,4 @@ nbproject/*
 .sass-cache/
 .env
 /src/Controller/TestController.php
+/node_modules/

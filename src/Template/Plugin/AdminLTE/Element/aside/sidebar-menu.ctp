@@ -4,8 +4,31 @@ use Cake\Routing\Router;
 
 ?>
 <ul class="sidebar-menu" data-widget="tree">
-    <li><a href="<?= Router::url(['controller' => 'leads']) ?>"><i class="fa fa-book"></i> <span>Leads</span></a></li>
-    <li class="header">MAIN NAVIGATION 2</li>
+
+    <li class="header">MAIN NAVIGATION</li>
+
+    <li class="treeview">
+        <a href="#">
+            <i class="fa fa-building-o"></i> <span>Leads</span>
+            <span class="pull-right-container">
+        <i class="fa fa-angle-left pull-right"></i>
+      </span>
+        </a>
+        <ul class="treeview-menu">
+            <li>
+                <a href="<?= Router::url(['controller' => 'leads']) ?>"><i class="fa fa-building-o"></i>
+                    <span>All Leads Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?= Router::url(['controller' => 'leads', 'action' => 'starred']) ?>">
+                    <i class="fa fa-star"></i> <span>Starred</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+
+
     <li class="treeview">
         <a href="#">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>

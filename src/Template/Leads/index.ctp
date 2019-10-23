@@ -1,11 +1,18 @@
 <?php
 /** @var AjaxView $this */
 
+/** @var boolean $starred */
+
 use App\View\AjaxView;
 use Cake\Routing\Router;
 
-?>
+// Used to determine if search should be only for starred businesses
+$starred = isset($starred) ? $starred : false;
 
+?>
+<script>
+    const STARRED_URL_TOGGLE = '<?= Router::url(['controller' => 'Leads', 'action' => 'toggleStarred']) ?>/';
+</script>
 <style>
     td {
         max-width: 80px;
@@ -73,7 +80,10 @@ use Cake\Routing\Router;
                                v-bind:class="{ 'fa-star': business.starred, 'fa-star-o': !business.starred }"
                                v-on:click="toggleStarred(business)"
                             ></i>
-                            <a :href="'/leads/business/' + business._id['$oid']">{{business.company_name}}</a>
+                            <a :href="'/leads/business/' + business._id['$oid']" class="bold">
+                                {{business.company_name}}
+                            </a><br/>
+                            <google-search text="Google Search" :search-text="business.company_name"></google-search>
                         </td>
                         <td>
                             Naics: {{business.naics_description}}<br>
@@ -87,19 +97,25 @@ use Cake\Routing\Router;
                             </div>
                         </td>
                         <td>
-                            <div v-if="business.email"><i class="fa fa-at"></i>: {{business.email}}</div>
-                            <div v-if="business.email2"><i class="fa fa-chrome"></i><i class="fa fa-at"></i> 2:
+                            <div v-if="business.email">
+                                <i class="fa fa-at"></i>: <a-email :text="business.email" :email="business.email"></a-email>
+                            </div>
+                            <div v-if="business.email2"><i class="fa fa-at"></i> 2:
                                 {{business.email2}}
                             </div>
                             <div v-if="business.website">
-                                <i class="fab fa-chrome"></i>: <a :href="business.website" target="_blank">{{business.website}}</a>
+                                <i class="fa fa-chrome"></i>:
+                                <a-link
+                                    :href="business.website"
+                                    :title="business.website"
+                                    text="Open Website">
+                                </a-link>
+
                             </div>
                         </td>
                         <td>
-                            {{business | address}}
-                            <a :href="business | address | mapAddress" target="_blank">
-                                <i class="fa fa-map"></i>Map
-                            </a>
+                            {{business | address}}<br />
+                            <google-map text='Map' :address="business | address"></google-map>
                         </td>
                         <td>
                             <div v-if="business.sales_volume">
@@ -140,7 +156,8 @@ use Cake\Routing\Router;
             cities: <?= json_encode(array_values($cities)) ?>,
             search: {
                 city: null,
-                company_name: null
+                company_name: null,
+                <?= $starred ? 'starred: true' : '' ?>
             },
             search_results: null,
             is_busy: false
@@ -162,7 +179,39 @@ use Cake\Routing\Router;
                         console.log(response);
                         that.search_results = response.data.data;
                     })
-                    .catch(error => console.log(error))
+                    .catch(error => {
+                        showError('Something went wrong while trying to get the businesses. Refresh th page and try again!');
+                        console.log(error);
+                    })
+            },
+            toggleStarred: function (business) {
+                var that = this;
+                Swal.fire({
+                    title: 'Are you sure?',
+                    html: "Are you sure you want to star this business?",
+                    type: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Toggle Starred!'
+                }).then((result) => {
+                    var oldStatus = business.starred ? true : false;
+                    business.starred = !oldStatus;
+                    if (result.value) {
+                        axios.post(
+                            STARRED_URL_TOGGLE + business._id['$oid'],
+                            {starred: business.starred}
+                        )
+                            .then(function (response) {
+                                that.getBusinesses()
+                            })
+                            .catch(function (error) {
+                                showError('Something went wrong and the Starred status was not updated!');
+                                console.log(error);
+                                business.starred = oldStatus;
+                            });
+                    }
+                })
             }
         },
         filters: {
@@ -175,6 +224,9 @@ use Cake\Routing\Router;
             },
             mapAddress: function (value) {
                 return "https://www.google.com/maps/place/" + encodeURI(value);
+            },
+            googleSearchUrl: function (value) {
+                return "https://www.google.com/search?q=" + encodeURI(value);
             },
             titleCase: function (str) {
                 if (str) {

@@ -1,11 +1,10 @@
 <?php
 
-
 namespace App\Services;
-
 
 use Cake\I18n\Time;
 use Exception;
+use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 use MongoDB\DeleteResult;
 use MongoDB\Driver\Cursor;
@@ -178,11 +177,58 @@ class MongoDbHandler
         return $this->getCollection()->deleteMany($filter, $options);
     }
 
+    /**
+     * Gets the ISO date format
+     * @return string
+     */
     public function getNowIsoFormat()
     {
         $time = new Time();
 
         return $time->toIso8601String();
+    }
+
+    /**
+     * Updates a single field on a document based on the ID
+     *
+     * @param $id
+     * @param $field
+     * @param $value
+     *
+     * @return UpdateResult
+     * @throws Exception
+     */
+    public function updateField($id, $field, $value)
+    {
+        return $this->updateOne(
+            ['_id' => $id],
+            [
+                '$set' => [
+                    $field     => $value,
+                    'modified' => $this->getNowIsoFormat()
+                ]
+            ]
+        );
+    }
+
+
+    /**
+     * Returns a single document matching the id
+     *
+     * @param  string|ObjectId  $id
+     *
+     * @return array|object|null
+     * @throws \Exception
+     */
+    public function findById($id)
+    {
+        if (is_string($id)) {
+            $id = new ObjectId($id);
+        }
+
+        return $this->findOne([
+            '_id' => $id
+        ]);
     }
 
     /******************** Getters and Setters ***************************************?

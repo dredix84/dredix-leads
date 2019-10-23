@@ -12,6 +12,10 @@ use Cake\Routing\Router;
         'controller' => 'Leads',
         'action'     => 'toggleStarred'
     ]) ?>/' + BUSINESS_ID;
+    const BUSINESS_INLINE_EDIT_URL = '<?= Router::url([
+        'controller' => 'Leads',
+        'action'     => 'inlineEdit'
+    ]) ?>/' + BUSINESS_ID;
     const NOTE_URL_SAVE = '<?= Router::url(['controller' => 'Notes', 'action' => 'saveBusinessNote']) ?>';
     const NOTE_URL_GET = '<?= Router::url(['controller' => 'Notes', 'action' => 'getBusinessNotes']) ?>/' + BUSINESS_ID;
     const TODO_URL_SAVE = '<?= Router::url(['controller' => 'Todos', 'action' => 'saveBusinessTask']) ?>';
@@ -69,7 +73,15 @@ use Cake\Routing\Router;
             <div class="row">
                 <div class="col-md-4">
                     <label>Company Name</label>
-                    <div v-html="business_details.company_name" :contenteditable="data_editable"></div>
+                    <v-input
+                        v-model="business_details.company_name"
+                        null-text="--"
+                        type="text"
+                        :required="true"
+                        :saved-action="inlineEditSave"
+                        placeholder="Company name"
+                        :data="{key: business_id, field: 'company_name'}"
+                    ></v-input>
                 </div>
 
                 <div class="col-md-4">
@@ -87,16 +99,52 @@ use Cake\Routing\Router;
                     <label>Address</label>
                     <dl>
                         <dt>Street:</dt>
-                        <dd v-html="business_details.address" :contenteditable="data_editable"></dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.address"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="Street here"
+                                :data="{key: business_id, field: 'address'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>City:</dt>
-                        <dd v-html="business_details.city" :contenteditable="data_editable"></dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.city"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="City here"
+                                :data="{key: business_id, field: 'city'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Postal Code:</dt>
-                        <dd v-html="business_details.postal_code" :contenteditable="data_editable"></dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.postal_code"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="Postal code here"
+                                :data="{key: business_id, field: 'postal_code'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>State:</dt>
-                        <dd v-html="business_details.state" :contenteditable="data_editable"></dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.state"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="State here"
+                                :data="{key: business_id, field: 'state'}"
+                            ></v-input>
+                        </dd>
                     </dl>
                 </div>
             </div>
@@ -106,19 +154,52 @@ use Cake\Routing\Router;
                     <label>Contacts Person</label>
                     <dl>
                         <dt>Name:</dt>
-                        <dd v-html="ifNull(business_details.contact_name)" :contenteditable="data_editable"></dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.contact_name"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="Name here"
+                                :data="{key: business_id, field: 'contact_name'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Title:</dt>
-                        <dd v-html="ifNull(business_details.title)"
-                            :contenteditable="data_editable"></dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.title"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="Title here"
+                                :data="{key: business_id, field: 'title'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Name 2:</dt>
-                        <dd v-html="ifNull(business_details.contact_name_secondary)"
-                            :contenteditable="data_editable"></dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.contact_name_secondary"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="Name here"
+                                :data="{key: business_id, field: 'contact_name_secondary'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Title 2:</dt>
-                        <dd v-html="ifNull(business_details.contact_title_secondary)"
-                            :contenteditable="data_editable"></dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.contact_title_secondary"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="Title here"
+                                :data="{key: business_id, field: 'contact_title_secondary'}"
+                            ></v-input>
+                        </dd>
 
                     </dl>
                 </div>
@@ -127,22 +208,76 @@ use Cake\Routing\Router;
                     <label>Contacts</label>
                     <dl>
                         <dt>Email:</dt>
-                        <dd>{{business_details.email | if_null}}</dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.email"
+                                null-text="--"
+                                type="email"
+                                :saved-action="inlineEditSave"
+                                placeholder="Email address here"
+                                :data="{key: business_id, field: 'email'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Email 2:</dt>
-                        <dd>{{business_details.email2 | if_null}}</dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.email2"
+                                null-text="--"
+                                type="email"
+                                :saved-action="inlineEditSave"
+                                placeholder="Email address here"
+                                :data="{key: business_id, field: 'email2'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Telephone:</dt>
-                        <dd>{{business_details.telephone | if_null}}</dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.telephone"
+                                null-text="--"
+                                type="tel"
+                                :saved-action="inlineEditSave"
+                                placeholder="Telephone #"
+                                :data="{key: business_id, field: 'telephone'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Fax:</dt>
-                        <dd>{{business_details.fax | if_null}}</dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.fax"
+                                null-text="--"
+                                type="tel"
+                                :saved-action="inlineEditSave"
+                                placeholder="Fax #"
+                                :data="{key: business_id, field: 'fax'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Toll Free:</dt>
-                        <dd>{{business_details.toll_free | if_null}}</dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.toll_free"
+                                null-text="--"
+                                type="tel"
+                                :saved-action="inlineEditSave"
+                                placeholder="Toll free #"
+                                :data="{key: business_id, field: 'toll_free'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Website</dt>
-                        <dd>{{business_details.website | if_null}}</dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.website"
+                                null-text="--"
+                                type="url"
+                                :saved-action="inlineEditSave"
+                                placeholder="Website URL here"
+                                :data="{key: business_id, field: 'website'}"
+                            ></v-input>
+                        </dd>
                     </dl>
                 </div>
 
@@ -150,10 +285,28 @@ use Cake\Routing\Router;
                     <label>Info</label>
                     <dl>
                         <dt>Employee Size:</dt>
-                        <dd>{{business_details.employee_size_raw | if_null}}</dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.employee_size_raw"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="Employee size here"
+                                :data="{key: business_id, field: 'employee_size_raw'}"
+                            ></v-input>
+                        </dd>
 
                         <dt>Sales Volume:</dt>
-                        <dd>{{business_details.sales_volume | if_null}}</dd>
+                        <dd>
+                            <v-input
+                                v-model="business_details.sales_volume"
+                                null-text="--"
+                                type="text"
+                                :saved-action="inlineEditSave"
+                                placeholder="Sales volume here"
+                                :data="{key: business_id, field: 'sales_volume'}"
+                            ></v-input>
+                        </dd>
                     </dl>
                 </div>
             </div>
@@ -375,6 +528,7 @@ use Cake\Routing\Router;
     var app3 = new Vue({
         el: '#pageApp',
         data: {
+            business_id: BUSINESS_ID,
             data_editable: false,
             business_details: <?= json_encode($business) ?>,
             todos: [],
@@ -388,8 +542,23 @@ use Cake\Routing\Router;
             },
             now_user_id: USER_ID,
             now_user_name: USER_NAME,
+            text_value: 'Test - Test'
         },
         methods: {
+            inlineEditSave: function (data) {
+                console.log(data);
+                var that = this;
+                axios.defaults.headers.post['Accept'] = 'application/json';
+                data['_csrfToken'] = this.getCsrfToken();
+                axios.post(BUSINESS_INLINE_EDIT_URL, data)
+                    .then(function (response) {
+                        $.notify("Business info updated", 'success');
+                    })
+                    .catch(function (error) {
+                        showError('Something went wrong while attempting to do the update. Please refresh and try again!');
+                        console.log(error);
+                    });
+            },
             setNoteEditing: function (val = null) {
                 this.note_ui.editing = val;
                 if (val === null) {
@@ -482,7 +651,7 @@ use Cake\Routing\Router;
                     }
                 })
             },
-            toggleStarred: function (todo) {
+            toggleStarred: function (business) {
                 var that = this;
                 Swal.fire({
                     title: 'Are you sure?',
@@ -529,7 +698,7 @@ use Cake\Routing\Router;
         },
         filters: {
             if_null: function (value, defaultValue = '--') {
-                if (value === null || value === undefined) {
+                if (value === null || value === undefined || value === "") {
                     return defaultValue;
                 } else {
                     return value;

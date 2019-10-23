@@ -49,6 +49,7 @@ use Cake\Core\Configure;
     <?php echo $this->fetch('css'); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <?php echo $this->Html->script('vue_components/general'); ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"
             integrity="sha256-S1J4GVHHDMiirir9qsXWc8ZWw74PHHafpsHp5PXtjTs=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue-select@latest"></script>
@@ -119,6 +120,7 @@ use Cake\Core\Configure;
 
 <!-- jQuery 3 -->
 <?php echo $this->Html->script('AdminLTE./bower_components/jquery/dist/jquery.min'); ?>
+<?php echo $this->Html->script('notify.min'); ?>
 <!-- Bootstrap 3.3.7 -->
 <?php echo $this->Html->script('AdminLTE./bower_components/bootstrap/dist/js/bootstrap.min'); ?>
 <!-- AdminLTE App -->
