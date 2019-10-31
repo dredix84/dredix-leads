@@ -4,6 +4,7 @@
 /** @var boolean $starred */
 
 use App\View\AjaxView;
+use Cake\Core\Configure;
 use Cake\Routing\Router;
 
 // Used to determine if search should be only for starred businesses
@@ -27,20 +28,74 @@ $starred = isset($starred) ? $starred : false;
             <h3 class="box-title">Search</h3>
         </div>
         <div class="box-body">
+            <?= $this->Form->create(null, ['v-on:submit.prevent' => 'getBusinesses']) ?>
             <div class="row">
-                <?= $this->Form->create(null, ['v-on:submit.prevent' => 'getBusinesses']) ?>
-
                 <div class='col-md-3'>
                     <?= $this->Form->label('City') ?>
                     <v-select :options="cities" v-model="search.city"></v-select>
                 </div>
+
                 <div class='col-md-3'>
                     <?= $this->Form->control('company_name', ['v-model' => 'search.company_name']); ?>
                 </div>
 
-                <?= $this->Form->submit('Search', [":disables" => 'is_busy']) ?>
-                <?= $this->Form->end() ?>
+                <div class='col-md-3'>
+                    <?= $this->Form->label('Tags') ?>
+                    <v-select taggable multiple :options="allowed_tags" v-model="search.tags"></v-select>
+                </div>
+
+                <div class='col-md-3'>
+                    <?= $this->Form->control('type', ['v-model' => 'search.type']); ?>
+                </div>
             </div>
+
+            <div class="row">
+                <div class='col-md-3'>
+                    <?= $this->Form->control(
+                        'has_email',
+                        [
+                            'v-model' => 'search.has_email',
+                            'type'    => 'select',
+                            'empty'   => "Any",
+                            'options' => ['No', 'Yes']
+                        ]
+                    );
+                    ?>
+                </div>
+
+                <div class='col-md-3'>
+                    <?= $this->Form->control(
+                        'has_website',
+                        [
+                            'v-model' => 'search.has_website',
+                            'type'    => 'select',
+                            'empty'   => "Any",
+                            'options' => ['No', 'Yes']
+                        ]
+                    );
+                    ?>
+                </div>
+
+                <div class='col-md-3'>
+                    <?= $this->Form->label('Radius City') ?>
+                    <v-select :options="cities" v-model="search.radius_city"></v-select>
+                </div>
+                <div class='col-md-3'>
+                    <?= $this->Form->control(
+                        'radius_kilometers',
+                        [
+                            'v-model' => 'search.radius_kilometers',
+                            'type'    => 'number',
+                            'min'     => 25,
+                            'step'    => 25
+                        ]
+                    );
+                    ?>
+                </div>
+
+                <?= $this->Form->submit('Search', [":disables" => 'is_busy']) ?>
+            </div>
+            <?= $this->Form->end() ?>
 
         </div>
     </div>
@@ -61,7 +116,7 @@ $starred = isset($starred) ? $starred : false;
         <div class="box-body">
 
             <div class="table-responsive no-padding">
-                <table class="table table-hover" v-if="search_results !== null">
+                <table class="table table-hover table-condensed" v-if="search_results !== null">
                     <thead>
                     <tr>
                         <th>Company</th>
@@ -73,17 +128,29 @@ $starred = isset($starred) ? $starred : false;
                         <th>Info</th>
                     </tr>
                     </thead>
-                    <tbody v-for="business in search_results">
-                    <tr>
+                    <tbody>
+                    <tr v-for="business in search_results">
                         <td>
                             <i class="gold fa"
                                v-bind:class="{ 'fa-star': business.starred, 'fa-star-o': !business.starred }"
                                v-on:click="toggleStarred(business)"
                             ></i>
-                            <a :href="'/leads/business/' + business._id['$oid']" class="bold">
+                            <a :href="'/leads/business/' + business._id['$oid']" class="bold" target="_blank">
                                 {{business.company_name}}
-                            </a><br/>
-                            <google-search text="Google Search" :search-text="business.company_name"></google-search>
+                            </a> <br/>
+
+                            <div v-if="business.tags">
+                                <span v-for="tag in business.tags" class="label label-primary margin-right-5">
+                                    {{tag}}
+                                </span>
+                            </div>
+
+                            <br/>
+                            <google-search
+                                text="Google Search"
+                                :search-text="business.company_name + ' ' + business.city"
+                            >
+                            </google-search>
                         </td>
                         <td>
                             Naics: {{business.naics_description}}<br>
@@ -91,14 +158,17 @@ $starred = isset($starred) ? $starred : false;
                         </td>
                         <td>{{business.contact_name | titleCase}}</td>
                         <td>
-                            <div v-if="business.telephone"><i class="fa fa-phone"></i>: {{business.telephone}}</div>
+                            <div v-if=" business.telephone
+                            "><i class="fa fa-phone"></i>: {{business.telephone}}
+                            </div>
                             <div v-if="business.fax"><i class="fa fa-fax"></i>: {{business.fax}}</div>
                             <div v-if="business.toll_free"><i class="fa fa-blender-phone"></i>: {{business.toll_free}}
                             </div>
                         </td>
                         <td>
                             <div v-if="business.email">
-                                <i class="fa fa-at"></i>: <a-email :text="business.email" :email="business.email"></a-email>
+                                <i class="fa fa-at"></i>:
+                                <a-email :text="business.email" :email="business.email"></a-email>
                             </div>
                             <div v-if="business.email2"><i class="fa fa-at"></i> 2:
                                 {{business.email2}}
@@ -114,7 +184,7 @@ $starred = isset($starred) ? $starred : false;
                             </div>
                         </td>
                         <td>
-                            {{business | address}}<br />
+                            {{business | address}}<br/>
                             <google-map text='Map' :address="business | address"></google-map>
                         </td>
                         <td>
@@ -157,10 +227,17 @@ $starred = isset($starred) ? $starred : false;
             search: {
                 city: null,
                 company_name: null,
+                type: null,
+                tags: [],
+                radius_kilometers: 25,
+                radius_city: null,
+                has_email: null,
+                has_website: null,
                 <?= $starred ? 'starred: true' : '' ?>
             },
             search_results: null,
-            is_busy: false
+            is_busy: false,
+            allowed_tags: <?= json_encode(Configure::read('business.allowed_tags')) ?>
         },
         methods: {
             getBusinesses: function () {

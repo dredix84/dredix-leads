@@ -2,6 +2,7 @@
 /** @var AjaxView $this */
 
 use App\View\AjaxView;
+use Cake\Core\Configure;
 use Cake\Routing\Router;
 
 /** @var string $businessId */
@@ -82,6 +83,17 @@ use Cake\Routing\Router;
                         placeholder="Company name"
                         :data="{key: business_id, field: 'company_name'}"
                     ></v-input>
+                    <google-search text="Google Search" :search-text="business_details.company_name"></google-search>
+
+                    <hr>
+                    <label>Tags:</label>
+                    <v-select
+                        taggable
+                        multiple
+                        v-model="business_details.tags"
+                        :options="allowed_tags"
+                        @input="updateBusinessTags"
+                    />
                 </div>
 
                 <div class="col-md-4">
@@ -217,6 +229,11 @@ use Cake\Routing\Router;
                                 placeholder="Email address here"
                                 :data="{key: business_id, field: 'email'}"
                             ></v-input>
+                            <a-email
+                                v-if="business_details.email"
+                                text="Send Email"
+                                :email="business_details.email + '?subject=Introduction / have you heard of Dredix'"
+                            ></a-email>
                         </dd>
 
                         <dt>Email 2:</dt>
@@ -277,6 +294,11 @@ use Cake\Routing\Router;
                                 placeholder="Website URL here"
                                 :data="{key: business_id, field: 'website'}"
                             ></v-input>
+                            <a-link
+                                :href="business_details.website"
+                                :title="business_details.website"
+                                text="Open">
+                            </a-link>
                         </dd>
                     </dl>
                 </div>
@@ -525,6 +547,7 @@ use Cake\Routing\Router;
 
 
 <script>
+    Vue.component('v-select', VueSelect.VueSelect);
     var app3 = new Vue({
         el: '#pageApp',
         data: {
@@ -542,11 +565,10 @@ use Cake\Routing\Router;
             },
             now_user_id: USER_ID,
             now_user_name: USER_NAME,
-            text_value: 'Test - Test'
+            allowed_tags: <?= json_encode(Configure::read('business.allowed_tags')) ?>
         },
         methods: {
             inlineEditSave: function (data) {
-                console.log(data);
                 var that = this;
                 axios.defaults.headers.post['Accept'] = 'application/json';
                 data['_csrfToken'] = this.getCsrfToken();
@@ -558,6 +580,14 @@ use Cake\Routing\Router;
                         showError('Something went wrong while attempting to do the update. Please refresh and try again!');
                         console.log(error);
                     });
+            },
+            updateBusinessTags: function (value) {
+                let data = {
+                    key: this.business_id,
+                    field: 'tags',
+                    value: value
+                };
+                this.inlineEditSave(data);
             },
             setNoteEditing: function (val = null) {
                 this.note_ui.editing = val;

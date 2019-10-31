@@ -42,3 +42,4 @@ nbproject/*
 .env
 /src/Controller/TestController.php
 /node_modules/
+/composer.lock
