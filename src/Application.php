@@ -47,7 +47,7 @@ class Application extends BaseApplication
          * Debug Kit should not be installed on a production system
          */
 //        if (Configure::read('debug')) {
-            Configure::write('DebugKit.safeTld', ['dev', 'local', 'example', 'localhost']);
+            Configure::write('DebugKit.safeTld', ['dev', 'local', 'example', 'localhost', 'leads.dredix.io']);
             $this->addPlugin(\DebugKit\Plugin::class);
 //        }
 
