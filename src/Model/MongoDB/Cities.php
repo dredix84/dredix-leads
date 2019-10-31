@@ -24,4 +24,35 @@ class Cities extends MongoDbHandler
 
         return $outData;
     }
+
+    /**
+     * Performs radius search for all cities close to the named city
+     * @param $cityName
+     * @param $radiusKm
+     *
+     * @return array|\MongoDB\Driver\Cursor
+     * @throws \Exception
+     */
+    public function findCitiesNear($cityName, $radiusKm)
+    {
+        if ($dbCity = $this->findOne(['name' => $cityName])) {
+            $citiesConditions                 = [];
+            $citiesConditions['geo_location'] = [
+                '$nearSphere' => [
+                    '$geometry'    => [
+                        'type'        => 'Point',
+                        'coordinates' => (array)$dbCity->geo_location->coordinates
+                    ],
+                    '$maxDistance' => $radiusKm
+                ]
+            ];
+
+            $results = $this->find($citiesConditions);
+
+            return $results;
+        }
+
+        return [];
+    }
+
 }

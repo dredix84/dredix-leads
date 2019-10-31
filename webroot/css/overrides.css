@@ -2,6 +2,10 @@
     color: gold;
 }
 
+.margin-right-5{
+    margin-right: 5px;
+}
+
 .bold {
     font-weight: bold;
 }

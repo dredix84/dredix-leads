@@ -71,19 +71,11 @@ class LeadsController extends AppController
     public function getBusinesses()
     {
         $searchData = $this->request->getQueryParams();
-        $conditions = [];
-        if (isset($searchData['city']) && ! empty($searchData['city'])) {
-            $conditions['city'] = new Regex('^'.$searchData['city'], 'i');
-        }
-        if (isset($searchData['company_name']) && ! empty($searchData['company_name'])) {
-            $conditions['company_name'] = new Regex($searchData['company_name'], 'i');
-        }
-        if (isset($searchData['starred']) && ! empty($searchData['starred'])) {
-            $conditions['starred'] = true;
-        }
+        $businessModel = new Businesses();
+
+        $conditions = $businessModel->getFilterFromPostData($searchData);
 
         if (count($conditions)) {
-            $businessModel = new Businesses();
             $businesses    = $businessModel->find($conditions, ['limit' => 200]);
 
             return $this->jsonSuccessResponse($businesses->toArray(), ['search' => $conditions]);

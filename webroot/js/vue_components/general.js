@@ -24,7 +24,7 @@ Vue.component('a-email', {
     data: function () {
         return {}
     },
-    template: '<a :href="\'mailto:\' + email" target="_blank" :title="title">{{text}}</a>'
+    template: '<a :href="\'mailto:\' + email" :title="title" v-html="text"></a>'
 });
 
 Vue.component('google-map', {

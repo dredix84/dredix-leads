@@ -90,6 +90,7 @@ try {
  */
 //Configure::load('app_local', 'default');
 Configure::load('adminlte', 'default');
+Configure::load('business_settings', 'default');
 
 /*
  * When debug = true the metadata cache should only last
