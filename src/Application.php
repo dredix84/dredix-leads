@@ -46,10 +46,11 @@ class Application extends BaseApplication
          * Only try to load DebugKit in development mode
          * Debug Kit should not be installed on a production system
          */
-//        if (Configure::read('debug')) {
+        if (Configure::read('debug')) {
             Configure::write('DebugKit.safeTld', ['dev', 'local', 'example', 'localhost', 'leads.dredix.io']);
+            Configure::write('DebugKit.forceEnable', true);
             $this->addPlugin(\DebugKit\Plugin::class);
-//        }
+        }
 
         // Load more plugins here
         $this->addPlugin('AdminLTE');
